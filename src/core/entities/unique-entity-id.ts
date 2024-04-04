@@ -1,17 +1,34 @@
-import {randomUUID} from "node:crypto";
+import { randomUUID } from "node:crypto"; // Importa a função randomUUID do módulo crypto do Node.js
 
-export class UniqueEntityId{
-    private value:string
+/**
+ * Classe para representar um identificador único de entidade.
+ */
+export class UniqueEntityId {
+    private value: string; // Valor do identificador único
 
-    toString(){
-        return this.value
+    /**
+     * Obtém uma representação em string do identificador único.
+     * @returns Uma representação em string do identificador único.
+     */
+    toString() {
+        return this.value;
     }
-    toValue(){
-        return this.value
+
+    /**
+     * Obtém o valor do identificador único.
+     * @returns O valor do identificador único.
+     */
+    toValue() {
+        return this.value;
     }
 
-    constructor(value?:string) {
-
-        this.value = value ?? randomUUID()
+    /**
+     * Construtor da classe UniqueEntityId.
+     * Se nenhum valor for fornecido, um novo identificador único será gerado automaticamente.
+     * @param value O valor do identificador único (opcional).
+     */
+    constructor(value?: string) {
+        // Se nenhum valor for fornecido, gera um novo identificador único usando randomUUID()
+        this.value = value ?? randomUUID();
     }
 }

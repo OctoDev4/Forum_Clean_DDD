@@ -1,8 +1,8 @@
 import {expect, test} from "vitest";
 
-import {AnswerQuestionUseCase} from "@/domain/use-cases/answer-question";
-import {AnswerRepository} from "@/domain/repositories/answer-repository";
-import {Answer} from "@/domain/entities/answer";
+import {AnswerQuestionUseCase} from "@/domain/forum/application/use-cases/answer-question";
+import {AnswerRepository} from "@/domain/forum/application/repositories/answer-repository";
+import {Answer} from "@/domain/forum/enterprise/entities/answer";
 
 
 const fakeAnswerRepository:AnswerRepository = {

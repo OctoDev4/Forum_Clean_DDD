@@ -1,5 +1,6 @@
-import {Answer} from "@/domain/entities/answer";
-import {AnswerRepository} from "@/domain/repositories/answer-repository";
+import {Answer} from "@/domain/forum/enterprise/entities/answer";
+import {AnswerRepository} from "@/domain/forum/application/repositories/answer-repository";
+import {UniqueEntityId} from "@/core/entities/unique-entity-id";
 
 interface AswerQuestionUseCaseRequest {
     instructorId: string;
@@ -17,10 +18,11 @@ export class AnswerQuestionUseCase {
 
     async execute({instructorId, questionId, content}: AswerQuestionUseCaseRequest) {
 
-        const answer = new Answer({
+        const answer = Answer.create({
             content,
-            authorId: instructorId,
-            questionId: questionId
+            authorId:new UniqueEntityId(instructorId),
+            questionId: new UniqueEntityId(questionId)
+
         });
 
 

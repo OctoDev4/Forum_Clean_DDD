@@ -6,8 +6,6 @@ export default defineConfig({
         tsconfigPaths()
     ],
     test:{
-        environmentMatchGlobs:[
-            ['src/http/controllers/**','prisma']
-        ],
+       globals:true
     }
 })
