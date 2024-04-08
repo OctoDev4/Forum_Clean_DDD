@@ -5,7 +5,7 @@ import { Optional } from "@/core/types/optional"; // Importa o tipo Optional
 /**
  * Interface representando as propriedades de uma resposta.
  */
-interface AnswerProps {
+export interface AnswerProps {
     authorId: UniqueEntityId; // Identificador único do autor da resposta
     questionId: UniqueEntityId; // Identificador único da pergunta associada à resposta
     content: string; // Conteúdo da resposta
