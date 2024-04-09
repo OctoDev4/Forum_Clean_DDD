@@ -1,11 +1,11 @@
 import {beforeEach, describe, expect, it, test} from "vitest";
 
-import {CreateQuestionUseCase} from "@/domain/forum/application/use-cases/create-question";
+
 import {InMemoryQuestionsRepository} from "../../../../../test/repositories/in-memory-questions-repository";
 import {GetQuestionBySlugUseCase} from "@/domain/forum/application/use-cases/get-question-by-slug";
-import {Question} from "@/domain/forum/enterprise/entities/question";
+
 import {Slug} from "@/domain/forum/enterprise/entities/value-objects/slug";
-import {UniqueEntityId} from "@/core/entities/unique-entity-id";
+
 import {MakeQuestion} from "../../../../../test/factories/make-question";
 
 

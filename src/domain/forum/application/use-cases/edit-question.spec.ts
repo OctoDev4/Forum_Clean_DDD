@@ -1,79 +1,59 @@
-import {beforeEach, describe, expect, it, test} from "vitest";
-
-
-import {InMemoryQuestionsRepository} from "../../../../../test/repositories/in-memory-questions-repository";
-
-import {UniqueEntityId} from "@/core/entities/unique-entity-id";
+import { EditQuestionUseCase } from './edit-question'
+import { InMemoryQuestionsRepository } from 'test/repositories/in-memory-questions-repository'
 import {MakeQuestion} from "../../../../../test/factories/make-question";
-import {EditQuestionUseCase} from "@/domain/forum/application/use-cases/edit-question";
+import {UniqueEntityId} from "@/core/entities/unique-entity-id";
+import {beforeEach, describe, expect, it} from "vitest";
 
 
-
-
-let inMemoryQuestionRepository = new InMemoryQuestionsRepository
-
+let inMemoryQuestionsRepository: InMemoryQuestionsRepository
 let sut: EditQuestionUseCase
 
-describe('Delete Question ', () => {
-
-
+describe('Edit Question', () => {
     beforeEach(() => {
-
-
-        inMemoryQuestionRepository = new InMemoryQuestionsRepository()
-
-        sut = new EditQuestionUseCase(inMemoryQuestionRepository)
-
+        inMemoryQuestionsRepository = new InMemoryQuestionsRepository()
+        sut = new EditQuestionUseCase(inMemoryQuestionsRepository)
     })
 
+    it('should be able to edit a question', async () => {
+        const newQuestion = MakeQuestion(
+            {
+                authorId: new UniqueEntityId('author-1'),
+            },
+            new UniqueEntityId('question-1'),
+        )
 
-    it('it should be able to delete a question', async () => {
-
-        const newQuestion = MakeQuestion({
-            authorId:new UniqueEntityId('author-1')
-        },new UniqueEntityId('question-1'))
-        await inMemoryQuestionRepository.create(newQuestion)
-
+        await inMemoryQuestionsRepository.create(newQuestion)
 
         await sut.execute({
-          authorId:'author-1',
-            title:'Test',
-            content:'Test',
-            questionId:newQuestion.id.toString()
+            questionId: newQuestion.id.toValue(),
+            authorId: 'author-1',
+            title: 'Pergunta teste',
+            content: 'Conteúdo teste',
         })
 
-
-        expect(inMemoryQuestionRepository.items[0]).toMatchObject({
-            title:'Test',
-            content:'Test'
+        expect(inMemoryQuestionsRepository.items[0]).toMatchObject({
+            title: 'Pergunta teste',
+            content: 'Conteúdo teste',
         })
-
-
-
     })
 
+    it('should not be able to edit a question from another user', async () => {
+        const newQuestion = MakeQuestion(
+            {
+                authorId: new UniqueEntityId('author-1'),
+            },
+            new UniqueEntityId('question-1'),
+        )
 
-    it('it should be able to delete a question', async () => {
+        await inMemoryQuestionsRepository.create(newQuestion)
 
-        const newQuestion = MakeQuestion({
-            authorId:new UniqueEntityId('author-1')
-        },new UniqueEntityId('question-1'))
-        await inMemoryQuestionRepository.create(newQuestion)
-
-
-      expect(()=>{
-          return sut.execute({
-              authorId:'author-2',
-              title:'Test',
-              content:'Test',
-              questionId:newQuestion.id.toString()
-          })
-      }).rejects.toBeInstanceOf(Error)
-
-
+        expect(() => {
+            return sut.execute({
+                questionId: newQuestion.id.toValue(),
+                authorId: 'author-2',
+                title: 'Pergunta teste',
+                content: 'Conteúdo teste',
+            })
+        }).rejects.toBeInstanceOf(Error)
     })
-
-
-
 })
-
