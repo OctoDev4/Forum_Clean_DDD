@@ -1,57 +1,78 @@
-import {QuestionRepository} from "@/domain/forum/application/repositories/question-repository";
-import {Question} from "@/domain/forum/enterprise/entities/question";
+// Importa a interface QuestionRepository e a entidade Question
+import { QuestionRepository } from "@/domain/forum/application/repositories/question-repository";
+import { Question } from "@/domain/forum/enterprise/entities/question";
+import {PaginationParams} from "@/core/repositories/pagination-params";
 
-export class InMemoryQuestionsRepository implements  QuestionRepository{
+// Implementa a interface QuestionRepository com um repositório de perguntas em memória
+export class InMemoryQuestionsRepository implements QuestionRepository {
 
-    public items:Question[] = []
+    // Array para armazenar as perguntas em memória
+    public items: Question[] = [];
 
+    // Método para encontrar uma pergunta pelo ID
+    async findById(id: string) {
+        // Procura a pergunta com o ID fornecido no array de perguntas
+        const question = this.items.find(item => item.id.toString() === id);
 
-
-    async findById(id: string){
-
-        const question = this.items.find(item => item.id.toString() === id)
-
-        if(!question){
-            throw new Error('question not found')
+        // Se a pergunta não for encontrada, lança um erro
+        if (!question) {
+            throw new Error('question not found');
         }
 
-
-        return question
-
-
+        // Retorna a pergunta encontrada
+        return question;
     }
 
+    // Método para encontrar uma pergunta pelo slug
+    async findBySlug(slug: string) {
+        // Procura a pergunta com o slug fornecido no array de perguntas
+        const question = this.items.find(item => item.slug.value === slug);
 
-    async findBySlug(slug:string){
-        const question = this.items.find(item=>item.slug.value === slug)
-
-
-        if (!question){
-            return null
+        // Se a pergunta não for encontrada, retorna null
+        if (!question) {
+            return null;
         }
 
-        return question
+        // Retorna a pergunta encontrada
+        return question;
     }
 
 
-    async create(question: Question){
 
-        this.items.push(question)
+    async findManyRecent({ page }: PaginationParams) {
+        const questions = this.items
+            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+            .slice((page - 1) * 20, page * 20)
+
+        return questions
     }
 
-    async save(question: Question){
 
-        const itemsIndex = this.items.findIndex((item)=>item.id ===question.id)
 
-        this.items[itemsIndex] = question
 
+
+
+    // Método para criar uma nova pergunta
+    async create(question: Question) {
+        // Adiciona a nova pergunta ao array de perguntas
+        this.items.push(question);
     }
 
-    async delete(question:Question){
-      const itemIndex = this.items.findIndex(item=>item.id === question.id);
-      
-      
-      this.items.splice(itemIndex, 1)
+    // Método para salvar uma pergunta existente
+    async save(question: Question) {
+        // Encontra o índice da pergunta no array de perguntas
+        const itemsIndex = this.items.findIndex((item) => item.id === question.id);
+
+        // Substitui a pergunta existente pela pergunta atualizada
+        this.items[itemsIndex] = question;
     }
 
+    // Método para excluir uma pergunta
+    async delete(question: Question) {
+        // Encontra o índice da pergunta no array de perguntas
+        const itemIndex = this.items.findIndex(item => item.id === question.id);
+
+        // Remove a pergunta do array
+        this.items.splice(itemIndex, 1);
+    }
 }
