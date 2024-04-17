@@ -1,6 +1,7 @@
 // Importa a interface AnswerRepository e a entidade Answer
-import { AnswerRepository } from "@/domain/forum/application/repositories/answer-repository";
-import { Answer } from "@/domain/forum/enterprise/entities/answer";
+import {AnswerRepository} from "@/domain/forum/application/repositories/answer-repository";
+import {Answer} from "@/domain/forum/enterprise/entities/answer";
+import {PaginationParams} from "@/core/repositories/pagination-params";
 
 // Implementa a interface AnswerRepository com um repositório de respostas em memória
 export class InMemoryAnswersRepository implements AnswerRepository {
@@ -20,6 +21,16 @@ export class InMemoryAnswersRepository implements AnswerRepository {
         // Retorna a resposta encontrada
         return answer;
     }
+
+
+    async findManyByQuestionId(questionId: string, {page}: PaginationParams) {
+        const answers = this.items.filter(item => item.questionId.toString() === questionId)
+            .slice((page - 1) * 20, page * 20)
+
+
+        return answers
+    }
+
 
     // Método para criar uma nova resposta
     async create(answer: Answer) {
