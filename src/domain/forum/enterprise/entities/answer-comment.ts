@@ -1,5 +1,4 @@
 import {UniqueEntityId} from "@/core/entities/unique-entity-id";
-import {Entity} from "@/core/entities/entity";
 import {Optional} from "@/core/types/optional";
 import {Comment, CommentProps} from "@/domain/forum/enterprise/entities/comment";
 
