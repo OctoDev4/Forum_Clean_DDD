@@ -1,6 +1,9 @@
 import {Question} from "@/domain/forum/enterprise/entities/question";
 import {QuestionRepository} from "@/domain/forum/application/repositories/question-repository";
 import {AnswerRepository} from "@/domain/forum/application/repositories/answer-repository";
+import {Either, left, right} from "@/core/either";
+import {ResourceNotFoundError} from "@/domain/forum/application/use-cases/errors/resource-not-found-error";
+import {NotAllowedError} from "@/domain/forum/application/use-cases/errors/not-allowed-error";
 
 interface ChooseQuestionBestAnswerUseCaseRequest{
     authorId:string,
@@ -8,9 +11,9 @@ interface ChooseQuestionBestAnswerUseCaseRequest{
 
 }
 
-interface ChooseQuestionBestAnswerUseCaseResponse{
-   question:Question
-}
+type ChooseQuestionBestAnswerUseCaseResponse = Either<ResourceNotFoundError|NotAllowedError, {
+    question:Question
+}>
 
 
    export class ChooseQuestionBestAnswerUseCase{
@@ -27,18 +30,18 @@ interface ChooseQuestionBestAnswerUseCaseResponse{
 
 
            if(!answer){
-               throw new Error('Answer not found')
+               return left(new ResourceNotFoundError())
            }
 
            const question  = await this.questionRepository.findById(answer.questionId.toString())
            
            
            if(!question){
-               throw new Error('Question not found')
+               return left(new ResourceNotFoundError())
            }
 
            if (authorId !== question.authorId.toString()){
-               throw new Error('Not allowed.')
+              return left(new NotAllowedError())
            }
 
 
@@ -47,8 +50,8 @@ interface ChooseQuestionBestAnswerUseCaseResponse{
            await this.questionRepository.save(question)
 
 
-           return {
+           return right({
                question
-           }
+           })
        }
    }

@@ -1,14 +1,15 @@
 import {Answer} from "@/domain/forum/enterprise/entities/answer";
 import {AnswerRepository} from "@/domain/forum/application/repositories/answer-repository";
+import {Either, right} from "@/core/either";
 
 interface FetchQuestionAnswersUseCaseRequest {
     questionId:string
     page:number
 }
 
-interface FetchQuestionAnswersUseCaseResponse {
+type FetchQuestionAnswersUseCaseResponse = Either<null, {
     answers:Answer[]
-}
+}>
 
 
 export class FetchQuestionAnswersUseCase {
@@ -19,9 +20,9 @@ export class FetchQuestionAnswersUseCase {
 
        const answers = await this.answersRepository.findManyByQuestionId(questionId,{page})
 
-        return {
+        return right({
             answers
-        }
+        })
 
 
     }
