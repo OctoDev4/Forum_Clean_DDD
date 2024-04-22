@@ -8,6 +8,7 @@ import {Slug} from "@/domain/forum/enterprise/entities/value-objects/slug";
 import {UniqueEntityId} from "@/core/entities/unique-entity-id";
 import {MakeQuestion} from "../../../../../test/factories/make-question";
 import {DeleteQuestionUseCase} from "@/domain/forum/application/use-cases/delete-question";
+import {NotAllowedError} from "@/domain/forum/application/use-cases/errors/not-allowed-error";
 
 
 let inMemoryQuestionRepository = new InMemoryQuestionsRepository()
@@ -57,15 +58,15 @@ describe('Delete Question ', () => {
         await inMemoryQuestionRepository.create(newQuestion)
 
 
+        const result = await sut.execute({
+            questionId:'question-1',
+            authorId:'author-errors'
+        })
+
+        expect(result.isLeft()).toBe(true)
+        expect(result.value).toBeInstanceOf(NotAllowedError)
 
 
-      expect(()=>{
-          return sut.execute({
-              questionId:'question-1',
-              authorId:'author-errors'
-          })
-
-      }).rejects.toBeInstanceOf(Error)
 
     })
 

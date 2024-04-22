@@ -6,6 +6,7 @@ import {beforeEach, describe, expect, it} from "vitest";
 import {InMemoryAnswersRepository} from "../../../../../test/repositories/in-memory-answers-repository";
 import {EditAnswerUseCase} from "@/domain/forum/application/use-cases/edit-answers";
 import {makeAnswer} from "../../../../../test/factories/make-answers";
+import {NotAllowedError} from "@/domain/forum/application/use-cases/errors/not-allowed-error";
 
 
 let inMemoryAnswersRepository: InMemoryAnswersRepository
@@ -48,12 +49,13 @@ describe('Edit Answer', () => {
 
         await inMemoryAnswersRepository.create(newQuestion)
 
-        expect(() => {
-            return sut.execute({
-                answerId: newQuestion.id.toValue(),
-                authorId: 'author-2',
-                content: 'Conteúdo teste',
-            })
-        }).rejects.toBeInstanceOf(Error)
+        const result = await sut.execute({
+            answerId: newQuestion.id.toValue(),
+            authorId: 'author-2',
+            content: 'Conteúdo teste',
+        })
+
+        expect(result.isLeft()).toBe(true)
+        expect(result.value).toBeInstanceOf(NotAllowedError)
     })
 })

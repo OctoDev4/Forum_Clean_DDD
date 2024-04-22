@@ -30,12 +30,12 @@ describe('Fetch question answers', () => {
         }))
 
 
-        const {answers} = await sut.execute({
+        const result =  await sut.execute({
             questionId:'question-1',
             page: 1
         })
 
-        expect(answers).toHaveLength(3)
+        expect(result.value?.answers).toHaveLength(3)
 
 
     })
@@ -51,13 +51,13 @@ describe('Fetch question answers', () => {
             }))
         }
 
-        const {answers} = await sut.execute({
+        const result = await sut.execute({
             questionId:'question-1',
             page: 2
 
         })
 
-        expect(answers).toHaveLength(2)
+        expect(result.value?.answers).toHaveLength(2)
 
 
     });

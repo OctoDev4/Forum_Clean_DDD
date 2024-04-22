@@ -24,14 +24,14 @@ describe('Create Question', () => {
     it('should be able create a question', async () => {
 
 
-        const {question} = await sut.execute({
+        const result= await sut.execute({
             authorId: '1',
             title: 'teste',
             content: 'teste'
         })
 
-        expect(question.id).toBeTruthy()
-        expect(inMemoryQuestionRepository.items[0].id).toEqual(question.id)
+        expect(result.isRight()).toBe(true)
+        expect(inMemoryQuestionRepository.items[0].id).toEqual(result.value?.question.id)
 
     })
 
