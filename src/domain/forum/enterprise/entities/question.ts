@@ -4,12 +4,13 @@ import {Slug} from "@/domain/forum/enterprise/entities/value-objects/slug";
 import {UniqueEntityId} from "@/core/entities/unique-entity-id";
 import {Optional} from "@/core/types/optional";
 import {AggregateRoot} from "@/core/entities/aggregate-root";
-import {QuestionAttachment} from "@/domain/forum/enterprise/entities/question-attachment";
+
+import {QuestionAttachmentList} from "@/domain/forum/enterprise/entities/question-attachment-list";
 
 export interface QuestionProps {
     authorId: UniqueEntityId
     bestAnswerId?: UniqueEntityId
-    attachments:QuestionAttachment[]
+    attachments:QuestionAttachmentList
     title: string
     content: string
     slug: Slug
@@ -77,7 +78,7 @@ export class Question extends AggregateRoot<QuestionProps> {
         this.touch()
     }
 
-    set attachments(attachments: QuestionAttachment[]){
+    set attachments(attachments: QuestionAttachmentList){
 
          this.props.attachments = attachments
 
@@ -95,7 +96,7 @@ export class Question extends AggregateRoot<QuestionProps> {
         const question = new Question({
             ...props,
             slug: props.slug ?? Slug.createFromText(props.title),
-            attachments:props.attachments ?? [],
+            attachments:props.attachments ?? new QuestionAttachmentList(),
             createdAt: props.createdAt ?? new Date(),
         }, id)
 
