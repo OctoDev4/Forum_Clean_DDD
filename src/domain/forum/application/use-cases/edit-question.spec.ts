@@ -1,87 +1,88 @@
-import { EditQuestionUseCase } from './edit-question'
-import { InMemoryQuestionsRepository } from 'test/repositories/in-memory-questions-repository'
+
+import { InMemoryAnswersRepository } from 'test/repositories/in-memory-answers-repository'
 
 import { NotAllowedError } from '@/domain/forum/application/use-cases/errors/not-allowed-error'
-import { InMemoryQuestionAttachmentsRepository } from 'test/repositories/in-memory-question-attachments-repository'
-import {MakeQuestion} from "../../../../../test/factories/make-question";
+import {InMemoryAnswerAttachmentsRepository} from "../../../../../test/repositories/in-memory-answer-attachments";
+import {makeAnswerAttachment} from "../../../../../test/factories/make-answer-attachment";
+import {makeAnswer} from "../../../../../test/factories/make-answers";
 import {UniqueEntityId} from "@/core/entities/unique-entity-id";
-import {makeQuestionAttachment} from "../../../../../test/factories/make-question-attachment";
+import {EditAnswerUseCase} from "@/domain/forum/application/use-cases/edit-answers";
 
 
-let inMemoryQuestionsRepository: InMemoryQuestionsRepository
-let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
-let sut: EditQuestionUseCase
+let inMemoryAnswerAttachmentsRepository: InMemoryAnswerAttachmentsRepository
+let inMemoryAnswersRepository: InMemoryAnswersRepository
+let sut: EditAnswerUseCase
 
-describe('Edit Question', () => {
+describe('Edit Answer', () => {
     beforeEach(() => {
-        inMemoryQuestionsRepository = new InMemoryQuestionsRepository()
-        inMemoryQuestionAttachmentsRepository =
-            new InMemoryQuestionAttachmentsRepository()
-        sut = new EditQuestionUseCase(
-            inMemoryQuestionsRepository,
-            inMemoryQuestionAttachmentsRepository,
+        inMemoryAnswerAttachmentsRepository =
+            new InMemoryAnswerAttachmentsRepository()
+        inMemoryAnswersRepository = new InMemoryAnswersRepository(
+            inMemoryAnswerAttachmentsRepository
+        )
+
+        sut = new EditAnswerUseCase(
+            inMemoryAnswersRepository,
+            inMemoryAnswerAttachmentsRepository,
         )
     })
 
-    it('should be able to edit a question', async () => {
-        const newQuestion = MakeQuestion(
+    it('should be able to edit a answer', async () => {
+        const newAnswer = makeAnswer(
             {
                 authorId: new UniqueEntityId('author-1'),
             },
-            new UniqueEntityId('question-1'),
+            new UniqueEntityId('answer-1'),
         )
 
-        await inMemoryQuestionsRepository.create(newQuestion)
+        await inMemoryAnswersRepository.create(newAnswer)
 
-        inMemoryQuestionAttachmentsRepository.items.push(
-            makeQuestionAttachment({
-                questionId: newQuestion.id,
+        inMemoryAnswerAttachmentsRepository.items.push(
+            makeAnswerAttachment({
+                answerId: newAnswer.id,
                 attachmentId: new UniqueEntityId('1'),
             }),
-            makeQuestionAttachment({
-                questionId: newQuestion.id,
+            makeAnswerAttachment({
+                answerId: newAnswer.id,
                 attachmentId: new UniqueEntityId('2'),
             }),
         )
 
         await sut.execute({
-            questionId: newQuestion.id.toValue(),
+            answerId: newAnswer.id.toValue(),
             authorId: 'author-1',
-            title: 'Pergunta teste',
             content: 'Conteúdo teste',
             attachmentsIds: ['1', '3'],
         })
 
-        expect(inMemoryQuestionsRepository.items[0]).toMatchObject({
-            title: 'Pergunta teste',
+        expect(inMemoryAnswersRepository.items[0]).toMatchObject({
             content: 'Conteúdo teste',
         })
 
         expect(
-            inMemoryQuestionsRepository.items[0].attachments.currentItems,
+            inMemoryAnswersRepository.items[0].attachments.currentItems,
         ).toHaveLength(2)
-        expect(
-            inMemoryQuestionsRepository.items[0].attachments.currentItems,
-        ).toEqual([
-            expect.objectContaining({ attachmentId: new UniqueEntityId('1') }),
-            expect.objectContaining({ attachmentId: new UniqueEntityId('3') }),
-        ])
+        expect(inMemoryAnswersRepository.items[0].attachments.currentItems).toEqual(
+            [
+                expect.objectContaining({ attachmentId: new UniqueEntityId('1') }),
+                expect.objectContaining({ attachmentId: new UniqueEntityId('3') }),
+            ],
+        )
     })
 
-    it('should not be able to edit a question from another user', async () => {
-        const newQuestion = MakeQuestion(
+    it('should not be able to edit a answer from another user', async () => {
+        const newAnswer = makeAnswer(
             {
                 authorId: new UniqueEntityId('author-1'),
             },
-            new UniqueEntityId('question-1'),
+            new UniqueEntityId('answer-1'),
         )
 
-        await inMemoryQuestionsRepository.create(newQuestion)
+        await inMemoryAnswersRepository.create(newAnswer)
 
         const result = await sut.execute({
-            questionId: newQuestion.id.toValue(),
+            answerId: newAnswer.id.toValue(),
             authorId: 'author-2',
-            title: 'Pergunta teste',
             content: 'Conteúdo teste',
             attachmentsIds: [],
         })

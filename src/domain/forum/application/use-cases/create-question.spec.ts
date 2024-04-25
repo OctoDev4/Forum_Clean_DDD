@@ -3,10 +3,15 @@ import {beforeEach, describe, expect, it, test} from "vitest";
 import {CreateQuestionUseCase} from "@/domain/forum/application/use-cases/create-question";
 import {InMemoryQuestionsRepository} from "../../../../../test/repositories/in-memory-questions-repository";
 import {UniqueEntityId} from "@/core/entities/unique-entity-id";
+import {QuestionAttachmentRepository} from "@/domain/forum/application/repositories/question-attachments-repository";
+import {
+    InMemoryQuestionAttachmentsRepository
+} from "../../../../../test/repositories/in-memory-question-attachments-repository";
 
 
-let inMemoryQuestionRepository = new InMemoryQuestionsRepository()
 
+let inMemoryQuestionsRepository: InMemoryQuestionsRepository
+let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
 let sut: CreateQuestionUseCase
 
 describe('Create Question', () => {
@@ -15,9 +20,13 @@ describe('Create Question', () => {
     beforeEach(() => {
 
 
-        inMemoryQuestionRepository = new InMemoryQuestionsRepository()
+        inMemoryQuestionAttachmentsRepository =
+            new InMemoryQuestionAttachmentsRepository()
 
-        sut = new CreateQuestionUseCase(inMemoryQuestionRepository)
+        inMemoryQuestionsRepository = new InMemoryQuestionsRepository(
+            inMemoryQuestionAttachmentsRepository,
+        )
+        sut = new CreateQuestionUseCase(inMemoryQuestionsRepository)
 
     })
 
@@ -33,10 +42,10 @@ describe('Create Question', () => {
         })
 
         expect(result.isRight()).toBe(true)
-        expect(inMemoryQuestionRepository.items[0].id).toEqual(result.value?.question.id)
+        expect(inMemoryQuestionsRepository.items[0].id).toEqual(result.value?.question.id)
 
-        expect(inMemoryQuestionRepository.items[0].attachments.currentItems).toHaveLength(2)
-        expect(inMemoryQuestionRepository.items[0].attachments.currentItems).toEqual([
+        expect(inMemoryQuestionsRepository.items[0].attachments.currentItems).toHaveLength(2)
+        expect(inMemoryQuestionsRepository.items[0].attachments.currentItems).toEqual([
             expect.objectContaining(
                 { attachmentId:new UniqueEntityId('1')}
             ),

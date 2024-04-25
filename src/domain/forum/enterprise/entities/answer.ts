@@ -1,13 +1,15 @@
 import { Entity } from "@/core/entities/entity"; // Importa a classe Entity
 import { UniqueEntityId } from "@/core/entities/unique-entity-id"; // Importa a classe UniqueEntityId
-import { Optional } from "@/core/types/optional"; // Importa o tipo Optional
+import { Optional } from "@/core/types/optional";
+import {AnswerAttachmentList} from "@/domain/forum/enterprise/entities/answer-attachment-list"; // Importa o tipo Optional
 
 /**
  * Interface representando as propriedades de uma resposta.
  */
 export interface AnswerProps {
     authorId: UniqueEntityId; // Identificador único do autor da resposta
-    questionId: UniqueEntityId; // Identificador único da pergunta associada à resposta
+    questionId: UniqueEntityId;
+    attachments:AnswerAttachmentList
     content: string; // Conteúdo da resposta
     createdAt: Date; // Data de criação da resposta
     updatedAt?: Date; // Data de atualização da resposta (opcional)
@@ -30,6 +32,9 @@ export class Answer extends Entity<AnswerProps> {
      */
     get questionId() {
         return this.props.questionId;
+    }
+    get attachments() {
+        return this.props.attachments
     }
 
     /**
@@ -78,6 +83,11 @@ export class Answer extends Entity<AnswerProps> {
         this.touch(); // Chama o método touch para atualizar o timestamp de updatedAt
     }
 
+    set attachments(attachments:AnswerAttachmentList){
+        this.props.attachments = attachments;
+        this.touch(); // Chama o método touch para atualizar o timestamp de updatedAt
+    }
+
     /**
      * Cria uma nova instância de Answer.
      * Se não fornecido, o timestamp de createdAt é definido para o momento atual.
@@ -85,10 +95,12 @@ export class Answer extends Entity<AnswerProps> {
      * @param id Identificador único da resposta (opcional).
      * @returns Uma nova instância de Answer.
      */
-    static create(props: Optional<AnswerProps, 'createdAt'>, id?: UniqueEntityId) {
+    static create(props: Optional<AnswerProps, 'createdAt' | 'attachments'>, id?: UniqueEntityId) {
         const answer = new Answer({
             ...props,
-            createdAt: new Date()
+            attachments:props.attachments?? new AnswerAttachmentList(),
+            createdAt: props.createdAt?? new Date(),
+
         }, id);
 
         return answer;

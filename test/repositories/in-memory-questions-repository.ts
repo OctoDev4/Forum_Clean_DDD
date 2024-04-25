@@ -2,12 +2,19 @@
 import { QuestionRepository } from "@/domain/forum/application/repositories/question-repository";
 import { Question } from "@/domain/forum/enterprise/entities/question";
 import {PaginationParams} from "@/core/repositories/pagination-params";
+import {QuestionAttachmentRepository} from "@/domain/forum/application/repositories/question-attachments-repository";
 
 // Implementa a interface QuestionRepository com um repositório de perguntas em memória
 export class InMemoryQuestionsRepository implements QuestionRepository {
 
     // Array para armazenar as perguntas em memória
     public items: Question[] = [];
+
+
+    constructor(
+        private questionAttachmentsRepository: QuestionAttachmentRepository,
+    ) {
+    }
 
     // Método para encontrar uma pergunta pelo ID
     async findById(id: string) {
@@ -74,5 +81,7 @@ export class InMemoryQuestionsRepository implements QuestionRepository {
 
         // Remove a pergunta do array
         this.items.splice(itemIndex, 1);
+
+        this.questionAttachmentsRepository.deleteManyByQuestionId(question.id.toString())
     }
 }
