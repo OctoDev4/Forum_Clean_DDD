@@ -36,7 +36,7 @@ export class AnswerQuestionUseCase {
         const answerAttachments = attachmentsIds.map((attachmentsId)=>{
             return AnswerAttachment.create({
                 attachmentId: new UniqueEntityId(attachmentsId),
-                AnswerId: answer.id
+                answerId: answer.id
             })
         })
 

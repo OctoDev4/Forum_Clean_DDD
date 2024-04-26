@@ -4,15 +4,19 @@ import {describe, expect} from "vitest";
 import {InMemoryAnswersRepository} from "../../../../../test/repositories/in-memory-answers-repository";
 import {makeAnswer} from "../../../../../test/factories/make-answers";
 import {UniqueEntityId} from "@/core/entities/unique-entity-id";
+import {InMemoryAnswerAttachmentsRepository} from "../../../../../test/repositories/in-memory-answer-attachments";
 
+
+
+let inMemoryAnswersAttachmentRepository:InMemoryAnswerAttachmentsRepository
 let inMemoryAnswersRepository:InMemoryAnswersRepository
 let sut:FetchQuestionAnswersUseCase
 
 
 describe('Fetch question answers', () => {
     beforeEach(() => {
-
-        inMemoryAnswersRepository = new InMemoryAnswersRepository()
+        inMemoryAnswersAttachmentRepository = new InMemoryAnswerAttachmentsRepository()
+        inMemoryAnswersRepository = new InMemoryAnswersRepository(inMemoryAnswersAttachmentRepository)
         sut = new FetchQuestionAnswersUseCase(inMemoryAnswersRepository)
     })
 

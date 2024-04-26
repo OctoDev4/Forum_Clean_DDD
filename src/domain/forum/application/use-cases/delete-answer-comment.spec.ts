@@ -3,7 +3,7 @@ import { DeleteAnswerCommentUseCase } from '@/domain/forum/application/use-cases
 import {makeAnswerComment} from "../../../../../test/factories/make-answer-comment";
 import {UniqueEntityId} from "@/core/entities/unique-entity-id";
 import {expect} from "vitest";
-import {tr} from "@faker-js/faker";
+
 import {NotAllowedError} from "@/domain/forum/application/use-cases/errors/not-allowed-error";
 
 

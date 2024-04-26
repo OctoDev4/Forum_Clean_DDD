@@ -46,7 +46,7 @@ export class EditAnswerUseCase{
         })
 
         answerAttachmentList.update(answerAttachments)
-        
+
 
         answer.attachments = answerAttachmentList
 
