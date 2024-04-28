@@ -31,4 +31,8 @@ export class UniqueEntityId {
         // Se nenhum valor for fornecido, gera um novo identificador único usando randomUUID()
         this.value = value ?? randomUUID();
     }
+
+   public equals(id: UniqueEntityId) {
+        return id.toValue() === this.value;
+    }
 }

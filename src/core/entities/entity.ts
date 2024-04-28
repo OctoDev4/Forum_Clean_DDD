@@ -26,4 +26,17 @@ export class Entity<Props> {
         this.props = props; // Define as propriedades da entidade
         this._id = id ?? new UniqueEntityId(randomUUID()); // Define o identificador único da entidade. Se não fornecido, gera um novo identificador único.
     }
+
+
+    public equals(entity: Entity<any>){
+        if(entity === this){
+            return true
+        }
+
+        if(entity.id === this._id){
+            return true
+        }
+
+        return false
+    }
 }
