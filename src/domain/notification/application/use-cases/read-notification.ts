@@ -1,25 +1,45 @@
-import {UniqueEntityId} from "@/core/entities/unique-entity-id";
-import {Either} from "@/core/either";
-import {Notification} from "@/domain/notification/enterprises/entities/notification";
+import { Either, left, right } from '@/core/either'
+import {NotAllowedError} from "@/domain/forum/application/use-cases/errors/not-allowed-error";
+import {ResourceNotFoundError} from "@/domain/forum/application/use-cases/errors/resource-not-found-error";
 import {NotificationsRepository} from "@/domain/notification/application/repositories/notifications-repository";
+import {Notification} from "@/domain/notification/enterprises/entities/notification";
 
-interface ReadNotificationUseCaseRequest{
-    recipientId: UniqueEntityId
-  notificationId:string
+
+interface ReadNotificationUseCaseRequest {
+    recipientId: string
+    notificationId: string
 }
 
-type ReadNotificationUseCasesponse =Either<null, {
-    notification:Notification
-}>
+type ReadNotificationUseCaseResponse = Either<
+    ResourceNotFoundError | NotAllowedError,
+    {
+        notification:Notification
+    }
+>
 
-export class ReadNotificationUseCase{
-    constructor(private notificationRepository:NotificationsRepository) {}
+export class ReadNotificationUseCase {
+    constructor(private notificationsRepository: NotificationsRepository) {}
 
+    async execute({
+                      recipientId,
+                      notificationId,
+                  }: ReadNotificationUseCaseRequest): Promise<ReadNotificationUseCaseResponse> {
+        const notification = await this.notificationsRepository.findById(
+            notificationId,
+        )
 
-    async execute({recipientId,notificationId}:ReadNotificationUseCaseRequest):Promise<ReadNotificationUseCasesponse>{
+        if (!notification) {
+            return left(new ResourceNotFoundError())
+        }
 
-        const notification  = await this.notificationRepository.findById(notificationId)
+        if (recipientId !== notification.recipientId.toString()) {
+            return left(new NotAllowedError())
+        }
 
+        notification.read()
 
+        await this.notificationsRepository.save(notification)
+
+        return right({ notification })
     }
 }
