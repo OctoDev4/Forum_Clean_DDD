@@ -41,11 +41,11 @@ describe('watched list', () => {
         list.remove(3)
 
         expect(list.currentItems).toHaveLength(2)
-        console.log(list)
+
 
         expect(list.getRemovedItems()).toEqual([3])
 
-        console.log(list)
+
 
     });
 
@@ -63,7 +63,7 @@ describe('watched list', () => {
         expect(list.getRemovedItems()).toEqual([])
         expect(list.getNewItems()).toEqual([])
 
-        console.log(list)
+
 
     });
 

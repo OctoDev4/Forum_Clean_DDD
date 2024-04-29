@@ -1,7 +1,9 @@
 import { Entity } from "@/core/entities/entity"; // Importa a classe Entity
 import { UniqueEntityId } from "@/core/entities/unique-entity-id"; // Importa a classe UniqueEntityId
 import { Optional } from "@/core/types/optional";
-import {AnswerAttachmentList} from "@/domain/forum/enterprise/entities/answer-attachment-list"; // Importa o tipo Optional
+import {AnswerAttachmentList} from "@/domain/forum/enterprise/entities/answer-attachment-list";
+import {AggregateRoot} from "@/core/entities/aggregate-root";
+import {AnswerCreatedEvent} from "@/domain/forum/enterprise/events/answer-created-event"; // Importa o tipo Optional
 
 /**
  * Interface representando as propriedades de uma resposta.
@@ -18,7 +20,7 @@ export interface AnswerProps {
 /**
  * Classe representando uma resposta.
  */
-export class Answer extends Entity<AnswerProps> {
+export class Answer extends AggregateRoot<AnswerProps> {
 
     /**
      * Obtém o identificador único do autor da resposta.
@@ -102,6 +104,13 @@ export class Answer extends Entity<AnswerProps> {
             createdAt: props.createdAt?? new Date(),
 
         }, id);
+
+     const isNewAnswer = !id
+
+
+        if (isNewAnswer){
+            answer.addDomainEvent(new AnswerCreatedEvent(answer))
+        }
 
         return answer;
     }
