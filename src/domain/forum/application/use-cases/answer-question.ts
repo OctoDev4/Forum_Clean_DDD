@@ -45,8 +45,6 @@ export class AnswerQuestionUseCase {
         await this.answerRepository.create(answer)
 
 
-        await this.answerRepository.create(answer)
-
         return right({
             answer,
         })

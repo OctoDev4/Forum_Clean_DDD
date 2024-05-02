@@ -1,4 +1,4 @@
-import { OnAnswerCreated } from '@/domain/notification/application/subscribers/on-answer-created'
+
 
 import { InMemoryAnswersRepository } from 'test/repositories/in-memory-answers-repository'
 import { InMemoryQuestionAttachmentsRepository } from 'test/repositories/in-memory-question-attachments-repository'
@@ -11,29 +11,25 @@ import {
 import { InMemoryNotificationsRepository } from 'test/repositories/in-memory-notifications-repository'
 
 import { waitFor } from 'test/utils/wait-for'
+import { OnQuestionBestAnswerChosen } from '@/domain/notification/application/subscribers/on-question-best-answer-chosen'
 import {InMemoryAnswerAttachmentsRepository} from "../../../../../test/repositories/in-memory-answer-attachments";
 import {MockInstance} from "vitest";
-import {MakeQuestion} from "../../../../../test/factories/make-question";
 import {makeAnswer} from "../../../../../test/factories/make-answers";
-import {OnQuestionCommentCreated} from "@/domain/notification/application/subscribers/on-question-comment-created";
-import {makeQuestionComment} from "../../../../../test/factories/make-question-comment";
-import {
-    InMemoryQuestionCommentsRepository
-} from "../../../../../test/repositories/in-memory-question-comments-repository";
+import {MakeQuestion} from "../../../../../test/factories/make-question";
 
 let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository
 let inMemoryAnswerAttachmentsRepository: InMemoryAnswerAttachmentsRepository
+let inMemoryAnswersRepository: InMemoryAnswersRepository
 let inMemoryNotificationsRepository: InMemoryNotificationsRepository
 let sendNotificationUseCase: SendNotificationUseCase
-let inMemoryQuestionCommentRepository:InMemoryQuestionCommentsRepository
 
 let sendNotificationExecuteSpy: MockInstance<
     [SendNotificationUseCaseRequest],
     Promise<SendNotificationUseCaseResponse>
 >
 
-describe('On Answer Created', () => {
+describe('On Question Best Answer Chosen', () => {
     beforeEach(() => {
         inMemoryQuestionAttachmentsRepository =
             new InMemoryQuestionAttachmentsRepository()
@@ -42,7 +38,9 @@ describe('On Answer Created', () => {
         )
         inMemoryAnswerAttachmentsRepository =
             new InMemoryAnswerAttachmentsRepository()
-        inMemoryQuestionCommentRepository = new InMemoryQuestionCommentsRepository()
+        inMemoryAnswersRepository = new InMemoryAnswersRepository(
+            inMemoryAnswerAttachmentsRepository,
+        )
         inMemoryNotificationsRepository = new InMemoryNotificationsRepository()
         sendNotificationUseCase = new SendNotificationUseCase(
             inMemoryNotificationsRepository,
@@ -50,16 +48,22 @@ describe('On Answer Created', () => {
 
         sendNotificationExecuteSpy = vi.spyOn(sendNotificationUseCase, 'execute')
 
-        new OnQuestionCommentCreated(inMemoryQuestionsRepository, sendNotificationUseCase)
+        new OnQuestionBestAnswerChosen(
+            inMemoryAnswersRepository,
+            sendNotificationUseCase,
+        )
     })
 
-    it('should  send a notification when an answer is created', async () => {
+    it('should send a notification when topic has new best answer chosen', async () => {
         const question = MakeQuestion()
-        const questionComment = makeQuestionComment({ questionId: question.id })
+        const answer = makeAnswer({ questionId: question.id })
 
         inMemoryQuestionsRepository.create(question)
-        inMemoryQuestionCommentRepository.create(questionComment)
+        inMemoryAnswersRepository.create(answer)
 
+        question.bestAnswerId = answer.id
+
+        inMemoryQuestionsRepository.save(question)
 
         await waitFor(() => {
             expect(sendNotificationExecuteSpy).toHaveBeenCalled()

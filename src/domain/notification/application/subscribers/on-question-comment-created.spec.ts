@@ -15,34 +15,31 @@ import {InMemoryAnswerAttachmentsRepository} from "../../../../../test/repositor
 import {MockInstance} from "vitest";
 import {MakeQuestion} from "../../../../../test/factories/make-question";
 import {makeAnswer} from "../../../../../test/factories/make-answers";
-import {OnQuestionCommentCreated} from "@/domain/notification/application/subscribers/on-question-comment-created";
-import {makeQuestionComment} from "../../../../../test/factories/make-question-comment";
 import {
     InMemoryQuestionCommentsRepository
 } from "../../../../../test/repositories/in-memory-question-comments-repository";
+import {makeQuestionComment} from "../../../../../test/factories/make-question-comment";
 
 let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository
-let inMemoryAnswerAttachmentsRepository: InMemoryAnswerAttachmentsRepository
+let inMemoryQuestionCommentAttachmentsRepository:InMemoryQuestionCommentsRepository
 let inMemoryNotificationsRepository: InMemoryNotificationsRepository
 let sendNotificationUseCase: SendNotificationUseCase
-let inMemoryQuestionCommentRepository:InMemoryQuestionCommentsRepository
 
 let sendNotificationExecuteSpy: MockInstance<
     [SendNotificationUseCaseRequest],
     Promise<SendNotificationUseCaseResponse>
 >
 
-describe('On Answer Created', () => {
+describe('On Question Comment created', () => {
     beforeEach(() => {
+        inMemoryQuestionCommentAttachmentsRepository = new InMemoryQuestionCommentsRepository()
         inMemoryQuestionAttachmentsRepository =
             new InMemoryQuestionAttachmentsRepository()
+
         inMemoryQuestionsRepository = new InMemoryQuestionsRepository(
             inMemoryQuestionAttachmentsRepository,
         )
-        inMemoryAnswerAttachmentsRepository =
-            new InMemoryAnswerAttachmentsRepository()
-        inMemoryQuestionCommentRepository = new InMemoryQuestionCommentsRepository()
         inMemoryNotificationsRepository = new InMemoryNotificationsRepository()
         sendNotificationUseCase = new SendNotificationUseCase(
             inMemoryNotificationsRepository,
@@ -50,18 +47,18 @@ describe('On Answer Created', () => {
 
         sendNotificationExecuteSpy = vi.spyOn(sendNotificationUseCase, 'execute')
 
-        new OnQuestionCommentCreated(inMemoryQuestionsRepository, sendNotificationUseCase)
+        new OnAnswerCreated(inMemoryQuestionsRepository, sendNotificationUseCase)
     })
 
     it('should  send a notification when an answer is created', async () => {
         const question = MakeQuestion()
         const questionComment = makeQuestionComment({ questionId: question.id })
 
-        inMemoryQuestionsRepository.create(question)
-        inMemoryQuestionCommentRepository.create(questionComment)
 
+      await  inMemoryQuestionsRepository.create(question)
+        await inMemoryQuestionCommentAttachmentsRepository.create(questionComment)
 
-        await waitFor(() => {
+         waitFor(() => {
             expect(sendNotificationExecuteSpy).toHaveBeenCalled()
         })
     })

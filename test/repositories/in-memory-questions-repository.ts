@@ -3,6 +3,7 @@ import { QuestionRepository } from "@/domain/forum/application/repositories/ques
 import { Question } from "@/domain/forum/enterprise/entities/question";
 import {PaginationParams} from "@/core/repositories/pagination-params";
 import {QuestionAttachmentRepository} from "@/domain/forum/application/repositories/question-attachments-repository";
+import {DomainEvents} from "@/core/events/domain-events";
 
 // Implementa a interface QuestionRepository com um repositório de perguntas em memória
 export class InMemoryQuestionsRepository implements QuestionRepository {
@@ -63,6 +64,8 @@ export class InMemoryQuestionsRepository implements QuestionRepository {
     async create(question: Question) {
         // Adiciona a nova pergunta ao array de perguntas
         this.items.push(question);
+
+        DomainEvents.dispatchEventsForAggregate(question.id)
     }
 
     // Método para salvar uma pergunta existente
@@ -72,6 +75,9 @@ export class InMemoryQuestionsRepository implements QuestionRepository {
 
         // Substitui a pergunta existente pela pergunta atualizada
         this.items[itemsIndex] = question;
+
+
+        DomainEvents.dispatchEventsForAggregate(question.id)
     }
 
     // Método para excluir uma pergunta

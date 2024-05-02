@@ -14,7 +14,7 @@ let sut: CommentOnQuestionUseCase
 
 describe('Comment on Question', () => {
     beforeEach(() => {
-        inMemoryQuestionAttachmentsRepository: new InMemoryQuestionAttachmentsRepository()
+        new InMemoryQuestionAttachmentsRepository()
         inMemoryQuestionsRepository = new InMemoryQuestionsRepository(inMemoryQuestionAttachmentsRepository)
         inMemoryQuestionCommentsRepository =
             new InMemoryQuestionCommentsRepository()
