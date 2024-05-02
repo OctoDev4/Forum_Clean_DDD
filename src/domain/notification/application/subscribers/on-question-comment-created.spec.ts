@@ -1,6 +1,6 @@
 import { OnAnswerCreated } from '@/domain/notification/application/subscribers/on-answer-created'
 
-import { InMemoryAnswersRepository } from 'test/repositories/in-memory-answers-repository'
+
 import { InMemoryQuestionAttachmentsRepository } from 'test/repositories/in-memory-question-attachments-repository'
 import { InMemoryQuestionsRepository } from 'test/repositories/in-memory-questions-repository'
 import {
@@ -14,7 +14,7 @@ import { waitFor } from 'test/utils/wait-for'
 import {InMemoryAnswerAttachmentsRepository} from "../../../../../test/repositories/in-memory-answer-attachments";
 import {MockInstance} from "vitest";
 import {MakeQuestion} from "../../../../../test/factories/make-question";
-import {makeAnswer} from "../../../../../test/factories/make-answers";
+
 import {
     InMemoryQuestionCommentsRepository
 } from "../../../../../test/repositories/in-memory-question-comments-repository";

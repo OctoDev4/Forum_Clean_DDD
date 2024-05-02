@@ -30,7 +30,7 @@ export class OnQuestionCommentCreated implements EventHandler{
             await this.sendNotification.execute({
                 recipientId: question.authorId.toString(),
                 title:`nova resposta em ${question.title.substring(0,40).concat('...')}`,
-                content:'123'
+                content:question.excerpt
 
             })
 
